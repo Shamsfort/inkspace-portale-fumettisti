@@ -1,0 +1,33 @@
+@import 'bootstrap';
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --ink: #171625;
+    --paper: #f7f3ea;
+    --violet: #6d45e0;
+    --coral: #ff6b4a;
+    --yellow: #ffd33d;
+}
+
+body { background: var(--paper); color: var(--ink); font-family: Inter, sans-serif; min-height: 100vh; }
+a { color: var(--violet); }
+.navbar { background: var(--ink); }
+.navbar-brand { font-family: 'Bebas Neue', sans-serif; letter-spacing: .08em; font-size: 1.7rem; }
+.navbar-brand span, .eyebrow { color: var(--yellow); }
+.btn-accent { background: var(--yellow); color: var(--ink); font-weight: 700; }
+.btn-brand { background: var(--violet); color: #fff; font-weight: 700; }
+.btn-brand:hover { background: #5932c4; color: #fff; }
+.hero { background: var(--ink); color: #fff; overflow: hidden; }
+.hero h1, .display-title { font-family: 'Bebas Neue', sans-serif; letter-spacing: .02em; }
+.hero h1 { font-size: clamp(3.3rem, 10vw, 7rem); line-height: .9; }
+.hero-panel { background: var(--coral); border: 3px solid #fff; transform: rotate(2deg); box-shadow: 12px 12px 0 var(--yellow); }
+.page-section { min-height: 65vh; }
+.surface-card, .comic-card { background: #fff; border: 1px solid rgba(23,22,37,.12); border-radius: 1rem; box-shadow: 0 .75rem 2rem rgba(23,22,37,.08); }
+.comic-card { height: 100%; overflow: hidden; transition: transform .2s ease, box-shadow .2s ease; }
+.comic-card:hover { transform: translateY(-5px); box-shadow: 0 1rem 2.5rem rgba(23,22,37,.14); }
+.comic-cover { aspect-ratio: 3 / 4; width: 100%; object-fit: cover; background: #ded8ca; }
+.profile-avatar { aspect-ratio: 1; width: 100%; object-fit: cover; background: #ded8ca; border-radius: 1rem; }
+.eyebrow { font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+.badge-category { background: #ede7ff; color: #4d29ad; }
+.form-control, .form-select { border-radius: .75rem; padding: .75rem 1rem; }
+footer { background: #fff; }

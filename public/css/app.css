@@ -1,0 +1,114 @@
+@import 'bootstrap';
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css');
+
+/* *{
+    font-family:Arial, Helvetica, sans-serif;
+    padding: 0;
+    justify-content: space-evenly;
+} */
+
+/* body{
+    margin-top: 25px;
+} */
+
+
+
+
+/* .imgformcreate{
+    background-size: cover!important;
+    background-position: center;
+} */
+
+/* .navbar{
+    background-color: #45425A!important;
+} */
+
+/* .centernav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+} */
+/* Colore testo navbar */
+/* .nava{
+    color: white;
+} */
+
+
+
+
+
+
+/* .navcustm{
+    background-color: #586BA4;
+    border:#000000;
+    border-radius: 2px;
+    box-sizing: border-box;
+    box-shadow: 0px 0px 10px 3px #ffffff;
+}  */
+
+
+/* footer{
+    background-color: #262626;
+    margin-top: -6cm!important;
+    margin-bottom: -0.3cm;
+} */
+
+
+/*  */
+/* body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+} */
+
+/* .card {
+    width: 300px;
+    margin: 0 auto;
+    margin-top: 100px; 
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+} */
+/* 
+.card-body {
+    padding: 20px;
+} */
+
+/* .card-title {
+    margin-bottom: 20px;
+    text-align: center;
+} */
+
+/* .login-form {
+    display: flex;
+    flex-direction: column;
+} */
+
+/* .form-group {
+    margin-bottom: 20px;
+} */
+
+/* label {
+    margin-bottom: 5px;
+} */
+
+/* input[type="text"],
+input[type="password"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+} */
+
+/* button {
+padding: 10px;
+background-color: #007bff;
+color: #fff;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: background-color 0.3s ease;
+} */
+
+/* button:hover {
+background-color: #0056b3;
+} */
