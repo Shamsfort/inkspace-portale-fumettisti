@@ -23,6 +23,23 @@ foreach ([
 
 $databaseUrl = getenv('DATABASE_URL');
 $usesPostgres = is_string($databaseUrl) && $databaseUrl !== '';
+
+if ($usesPostgres) {
+    $databaseHost = parse_url($databaseUrl, PHP_URL_HOST);
+    $databaseQuery = parse_url($databaseUrl, PHP_URL_QUERY);
+
+    if (is_string($databaseHost)
+        && str_ends_with($databaseHost, '.neon.tech')
+        && ! str_contains((string) $databaseQuery, 'options=')) {
+        $endpointId = explode('.', $databaseHost)[0];
+        $separator = str_contains($databaseUrl, '?') ? '&' : '?';
+        $databaseUrl .= $separator.'options='.rawurlencode('endpoint='.$endpointId);
+        putenv('DATABASE_URL='.$databaseUrl);
+        $_ENV['DATABASE_URL'] = $databaseUrl;
+        $_SERVER['DATABASE_URL'] = $databaseUrl;
+    }
+}
+
 $databasePath = '/tmp/inkspace.sqlite';
 
 if (! $usesPostgres && ! file_exists($databasePath)) {
