@@ -21,10 +21,17 @@ foreach ([
     }
 }
 
-$databaseUrl = getenv('DATABASE_URL');
+$unpooledDatabaseUrl = getenv('DATABASE_URL_UNPOOLED');
+$databaseUrl = is_string($unpooledDatabaseUrl) && $unpooledDatabaseUrl !== ''
+    ? $unpooledDatabaseUrl
+    : getenv('DATABASE_URL');
 $usesPostgres = is_string($databaseUrl) && $databaseUrl !== '';
 
 if ($usesPostgres) {
+    putenv('DATABASE_URL='.$databaseUrl);
+    $_ENV['DATABASE_URL'] = $databaseUrl;
+    $_SERVER['DATABASE_URL'] = $databaseUrl;
+
     $databaseHost = parse_url($databaseUrl, PHP_URL_HOST);
     if (is_string($databaseHost)
         && str_ends_with($databaseHost, '.neon.tech')) {
