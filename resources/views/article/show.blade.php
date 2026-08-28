@@ -2,7 +2,7 @@
     <main class="container py-5 page-section">
         <div class="row g-5 align-items-start">
             <div class="col-md-5 col-lg-4">
-                @if($article->image)<img class="comic-cover rounded-4 shadow" src="{{ Storage::url($article->image) }}" alt="Copertina di {{ $article->title }}">@endif
+                @if($article->image)<img class="comic-cover rounded-4 shadow" src="{{ $article->image_url }}" alt="Copertina di {{ $article->title }}">@endif
             </div>
             <div class="col-md-7 col-lg-8">
                 <div class="d-flex gap-2 flex-wrap mb-3">@foreach($article->categories as $category)<span class="badge badge-category">{{ $category->name }}</span>@endforeach</div>
@@ -23,3 +23,4 @@
         </div>
     </main>
 </x-layout>
+
