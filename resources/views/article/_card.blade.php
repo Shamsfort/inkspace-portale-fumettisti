@@ -1,6 +1,6 @@
 <article class="comic-card">
     @if ($article->image)
-        <img class="comic-cover" src="{{ Storage::url($article->image) }}" alt="Copertina di {{ $article->title }}">
+        <img class="comic-cover" src="{{ $article->image_url }}" alt="Copertina di {{ $article->title }}">
     @else
         <div class="comic-cover d-flex align-items-center justify-content-center display-title display-4">NO COVER</div>
     @endif
@@ -15,3 +15,4 @@
         <a class="stretched-link fw-semibold" href="{{ route('article.show', $article) }}">Scopri il fumetto</a>
     </div>
 </article>
+
