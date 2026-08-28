@@ -1,5 +1,5 @@
 <div class="card mb-4" style="width: 18rem;">
-    <img class="card-img-top" src="{{ Storage::url($img) }}" alt="Immagine di {{ $name }}">
+    <img class="card-img-top" src="{{ app(\App\Services\MediaStorage::class)->url($img) }}" alt="Immagine di {{ $name }}">
     <div class="card-body">
         <h4 class="card-title">{{ $username }}</h4>
         <h5 class="card-text">{{ $phone }}</h5>
@@ -38,3 +38,4 @@
         0 0 100px #008cff;
     }
 </style>
+
