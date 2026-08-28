@@ -26,17 +26,12 @@ $usesPostgres = is_string($databaseUrl) && $databaseUrl !== '';
 
 if ($usesPostgres) {
     $databaseHost = parse_url($databaseUrl, PHP_URL_HOST);
-    $databaseQuery = parse_url($databaseUrl, PHP_URL_QUERY);
-
     if (is_string($databaseHost)
-        && str_ends_with($databaseHost, '.neon.tech')
-        && ! str_contains((string) $databaseQuery, 'options=')) {
+        && str_ends_with($databaseHost, '.neon.tech')) {
         $endpointId = explode('.', $databaseHost)[0];
-        $separator = str_contains($databaseUrl, '?') ? '&' : '?';
-        $databaseUrl .= $separator.'options='.rawurlencode('endpoint='.$endpointId);
-        putenv('DATABASE_URL='.$databaseUrl);
-        $_ENV['DATABASE_URL'] = $databaseUrl;
-        $_SERVER['DATABASE_URL'] = $databaseUrl;
+        putenv('NEON_ENDPOINT_ID='.$endpointId);
+        $_ENV['NEON_ENDPOINT_ID'] = $endpointId;
+        $_SERVER['NEON_ENDPOINT_ID'] = $endpointId;
     }
 }
 
