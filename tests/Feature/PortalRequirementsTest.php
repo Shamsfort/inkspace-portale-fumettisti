@@ -80,6 +80,15 @@ class PortalRequirementsTest extends TestCase
         Storage::disk('public')->assertExists($article->image);
     }
 
+    public function test_blob_urls_are_rendered_without_local_storage_prefix(): void
+    {
+        $article = new Article([
+            'image' => 'https://example.public.blob.vercel-storage.com/covers/test.jpg',
+        ]);
+
+        $this->assertSame($article->image, $article->image_url);
+    }
+
     public function test_only_the_author_can_edit_or_delete_a_comic(): void
     {
         $author = User::factory()->create();
@@ -111,3 +120,4 @@ class PortalRequirementsTest extends TestCase
         Mail::assertSent(ContactMessageMail::class, 2);
     }
 }
+
