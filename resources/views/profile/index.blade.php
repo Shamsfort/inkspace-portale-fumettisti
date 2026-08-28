@@ -7,7 +7,7 @@
                 <div class="col-12 col-md-6 col-lg-4">
                     <article class="surface-card p-3 h-100 d-flex gap-3">
                         @if($user->profile?->image)
-                            <img src="{{ Storage::url($user->profile->image) }}" class="rounded-3 object-fit-cover" width="110" height="110" alt="Profilo di {{ $user->name }}">
+                            <img src="{{ $user->profile->image_url }}" class="rounded-3 object-fit-cover" width="110" height="110" alt="Profilo di {{ $user->name }}">
                         @else
                             <div class="rounded-3 bg-dark text-white d-flex align-items-center justify-content-center display-title display-5" style="width:110px;height:110px">{{ mb_substr($user->name, 0, 1) }}</div>
                         @endif
@@ -21,3 +21,4 @@
         <div class="mt-5">{{ $users->links() }}</div>
     </main>
 </x-layout>
+
