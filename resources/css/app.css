@@ -23,7 +23,7 @@ a { color: var(--violet); }
 .hero-panel { background: var(--coral); border: 3px solid #fff; transform: rotate(2deg); box-shadow: 12px 12px 0 var(--yellow); }
 .page-section { min-height: 65vh; }
 .surface-card, .comic-card { background: #fff; border: 1px solid rgba(23,22,37,.12); border-radius: 1rem; box-shadow: 0 .75rem 2rem rgba(23,22,37,.08); }
-.comic-card { height: 100%; overflow: hidden; transition: border-color .2s ease, box-shadow .2s ease; }
+.comic-card { position: relative; height: 100%; overflow: hidden; transition: border-color .2s ease, box-shadow .2s ease; }
 .comic-card:hover, .comic-card:focus-within { border-color: rgba(109,69,224,.35); box-shadow: 0 1rem 2.5rem rgba(23,22,37,.14); }
 .comic-cover { aspect-ratio: 3 / 4; width: 100%; object-fit: cover; background: #ded8ca; }
 .profile-avatar { aspect-ratio: 1; width: 100%; object-fit: cover; background: #ded8ca; border-radius: 1rem; }
