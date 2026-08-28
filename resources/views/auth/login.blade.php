@@ -1,65 +1,63 @@
 <x-layout>
-    <style>
-        body {
-            background-color: rgb(52, 112, 146)!important;
-            margin-top: 10px!important;
-            display: flex!important;
-            justify-content: center!important;
-            align-items: center!important;
-            height: 80vh!important;
-        }
+    <main class="container py-5 page-section">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-5">
+                <p class="eyebrow text-dark mb-1">Bentornato</p>
+                <h1 class="display-title display-4">Accedi a InkSpace</h1>
 
-        .form-container {
-            background-color: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(5px);
-            border-radius: 20px;
-            padding: 20px;
-            animation: fadeInDown 1s ease-out;
-            max-width: 400px;
-            width: 100%;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-        }
+                <form class="surface-card p-4 p-lg-5 mt-4" method="POST" action="{{ route('login') }}">
+                    @csrf
 
-        @keyframes fadeInDown {
-            0% {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
+                    @if ($errors->any())
+                        <div class="alert alert-danger" role="alert">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input
+                            name="email"
+                            type="email"
+                            class="form-control"
+                            id="email"
+                            value="{{ old('email') }}"
+                            autocomplete="email"
+                            required
+                            autofocus
+                        >
+                    </div>
 
-    @if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @endif
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input
+                            name="password"
+                            type="password"
+                            class="form-control"
+                            id="password"
+                            autocomplete="current-password"
+                            required
+                        >
+                    </div>
 
-    <div class="form-container">
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-            <h3 class="text-center mb-4">Benvenuto Utente</h3>
-            <p class="text-center mb-4">Accedi con i tuoi dati</p>
-            <div class="mb-3">
-                <label for="email" class="form-label">E-Mail</label>
-                <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="E-Mail">
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                        <label class="form-check-label" for="remember">Ricordami</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-brand w-100">Accedi</button>
+
+                    <p class="text-center mt-4 mb-0">
+                        Non hai ancora un account?
+                        <a href="{{ route('register') }}">Registrati</a>
+                    </p>
+                </form>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input name="password" type="password" class="form-control" id="password" placeholder="Password">
-            </div>
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary">Invia</button>
-            </div>
-        </form>
-        <p class="text-center mt-3">Se non sei ancora registrato <a href="{{ route('register') }}">clicca qui</a></p>
-    </div>
+        </div>
+    </main>
 </x-layout>
+
