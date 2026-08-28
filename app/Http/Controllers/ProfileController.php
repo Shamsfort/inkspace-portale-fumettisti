@@ -5,16 +5,20 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Category;
 use App\Models\User;
+use App\Services\MediaStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function __construct(private readonly MediaStorage $mediaStorage)
+    {
+    }
+
     public function index(): View
     {
         $users = User::with('profile')
@@ -55,10 +59,8 @@ class ProfileController extends Controller
         $profileData = $request->safe()->only(['phone', 'company_address', 'short_description']);
 
         if ($request->hasFile('image')) {
-            if ($profile->image) {
-                Storage::disk('public')->delete($profile->image);
-            }
-            $profileData['image'] = $request->file('image')->store('profiles', 'public');
+            $this->mediaStorage->delete($profile->image);
+            $profileData['image'] = $this->mediaStorage->store($request->file('image'), 'profiles');
         }
 
         $profile->update($profileData);
@@ -69,9 +71,7 @@ class ProfileController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         $user = $request->user();
-        if ($user->profile?->image) {
-            Storage::disk('public')->delete($user->profile->image);
-        }
+        $this->mediaStorage->delete($user->profile?->image);
         Auth::logout();
         $user->delete();
         $request->session()->invalidate();
@@ -96,3 +96,4 @@ class ProfileController extends Controller
         return redirect()->route('profile.show')->with('message', 'Password aggiornata.');
     }
 }
+
