@@ -8,12 +8,16 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\Riviste;
 use App\Models\User;
+use App\Services\MediaStorage;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ArticleController extends Controller
 {
+    public function __construct(private readonly MediaStorage $mediaStorage)
+    {
+    }
+
     public function index(): View
     {
         $articles = Article::with(['user.profile', 'categories', 'rivista'])
@@ -46,7 +50,7 @@ class ArticleController extends Controller
         $data = $request->safe()->except('categories');
         $data['author_id'] = $request->user()->id;
         $data['category_id'] = $request->validated('categories')[0];
-        $data['image'] = $request->file('image')->store('covers', 'public');
+        $data['image'] = $this->mediaStorage->store($request->file('image'), 'covers');
         $data['is_accepted'] = true;
 
         $article = Article::create($data);
@@ -75,10 +79,8 @@ class ArticleController extends Controller
         $data['category_id'] = $request->validated('categories')[0];
 
         if ($request->hasFile('image')) {
-            if ($article->image) {
-                Storage::disk('public')->delete($article->image);
-            }
-            $data['image'] = $request->file('image')->store('covers', 'public');
+            $this->mediaStorage->delete($article->image);
+            $data['image'] = $this->mediaStorage->store($request->file('image'), 'covers');
         }
 
         $article->update($data);
@@ -91,9 +93,7 @@ class ArticleController extends Controller
     public function destroy(Article $article): RedirectResponse
     {
         $this->ensureOwner($article);
-        if ($article->image) {
-            Storage::disk('public')->delete($article->image);
-        }
+        $this->mediaStorage->delete($article->image);
         $article->delete();
 
         return redirect()->route('article.index')->with('message', 'Fumetto eliminato.');
@@ -112,3 +112,4 @@ class ArticleController extends Controller
         abort_unless(auth()->id() === $article->author_id, 403, 'Puoi modificare solo i tuoi fumetti.');
     }
 }
+
