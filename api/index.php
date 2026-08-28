@@ -90,7 +90,15 @@ if ($usesPostgres) {
             $database->statement('SELECT pg_advisory_lock(141001)');
 
             try {
-                $console->call('migrate', ['--force' => true]);
+                $hasEmptyPartialSchema = $schema->hasTable('users')
+                    && ! $schema->hasTable('articles')
+                    && $database->table('users')->count() === 0;
+
+                if ($hasEmptyPartialSchema) {
+                    $console->call('migrate:fresh', ['--force' => true]);
+                } else {
+                    $console->call('migrate', ['--force' => true]);
+                }
 
                 if ($database->table('categories')->count() === 0) {
                     $console->call('db:seed', ['--force' => true]);
