@@ -1,11 +1,11 @@
 <x-layout>
-    <main class="container py-5 page-section">
+    <main class="container py-4 page-section">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-5">
                 <p class="eyebrow text-dark mb-1">Bentornato</p>
                 <h1 class="display-title display-4">Accedi a InkSpace</h1>
 
-                <form class="surface-card p-4 p-lg-5 mt-4" method="POST" action="{{ route('login') }}">
+                <form class="surface-card p-4 mt-3" method="POST" action="{{ route('login') }}">
                     @csrf
 
                     @if ($errors->any())
