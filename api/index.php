@@ -6,6 +6,7 @@ error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 ini_set('display_errors', '0');
 
 $storagePath = '/tmp/storage';
+$bootstrapCachePath = '/tmp/bootstrap/cache';
 
 foreach ([
     $storagePath.'/app/public',
@@ -13,6 +14,7 @@ foreach ([
     $storagePath.'/framework/sessions',
     $storagePath.'/framework/views',
     $storagePath.'/logs',
+    $bootstrapCachePath,
 ] as $directory) {
     if (! is_dir($directory)) {
         mkdir($directory, 0755, true);
@@ -28,6 +30,11 @@ if (! file_exists($databasePath)) {
 $defaults = [
     'APP_ENV' => 'production',
     'APP_DEBUG' => 'false',
+    'APP_CONFIG_CACHE' => $bootstrapCachePath.'/config.php',
+    'APP_EVENTS_CACHE' => $bootstrapCachePath.'/events.php',
+    'APP_PACKAGES_CACHE' => $bootstrapCachePath.'/packages.php',
+    'APP_ROUTES_CACHE' => $bootstrapCachePath.'/routes-v7.php',
+    'APP_SERVICES_CACHE' => $bootstrapCachePath.'/services.php',
     'LOG_CHANNEL' => 'stderr',
     'DB_CONNECTION' => 'sqlite',
     'DB_DATABASE' => $databasePath,
