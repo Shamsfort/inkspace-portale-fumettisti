@@ -7,7 +7,7 @@
     <title>{{ $title ?? 'InkSpace — Fumettisti indipendenti' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <x-navbar />
 
     @if (session('message'))
@@ -21,7 +21,7 @@
 
     {{ $slot }}
 
-    <footer class="border-top mt-5 py-4">
+    <footer class="border-top mt-auto py-4">
         <div class="container d-flex flex-column flex-sm-row justify-content-between gap-2">
             <span>© {{ date('Y') }} InkSpace</span>
             <a href="{{ route('contact.create') }}">Contatti</a>
@@ -29,3 +29,4 @@
     </footer>
 </body>
 </html>
+
