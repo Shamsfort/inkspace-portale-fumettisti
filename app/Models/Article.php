@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Services\MediaStorage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,6 +29,11 @@ class Article extends Model
         'comic_number' => 'integer',
         'comic_year' => 'integer',
     ];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return app(MediaStorage::class)->url($this->image);
+    }
     
     // Definisci la relazione con l'autore
     public function author(): BelongsTo {
@@ -60,3 +66,4 @@ class Article extends Model
     }
 
 }
+
