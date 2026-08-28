@@ -1,7 +1,7 @@
 
     <div>
         <div class="card" style="width: 18rem;">
-            <img class="card-img-top" src="{{ Storage::url($img) }}" alt="Card image cap">
+            <img class="card-img-top" src="{{ app(\App\Services\MediaStorage::class)->url($img) }}" alt="Card image cap">
             <div class="card-body">
                 <h4 class="card-title">{{ $title }}</h4>
                 <h5 class="card-text">{{ $subtitle }}</h5>
@@ -24,7 +24,7 @@
             <button id="btnx" style="background-color: rgb(0, 140, 255);">
                 <a href="{{ $hrefShow }}" class="leggianchorindex">Vai al dettaglio</a>
             </button>
-    
+
             <style>
                 button {
                     padding: 10px 20px !important;
@@ -49,4 +49,4 @@
             </style>        
         </div>
     </div>
-    
+
