@@ -94,24 +94,18 @@ if ($usesPostgres) {
                 ->exists();
 
         if (! $isInitialized) {
-            $database->statement('SELECT pg_advisory_lock(141001)');
+            $hasEmptyPartialSchema = $schema->hasTable('users')
+                && ! $schema->hasTable('articles')
+                && $database->table('users')->count() === 0;
 
-            try {
-                $hasEmptyPartialSchema = $schema->hasTable('users')
-                    && ! $schema->hasTable('articles')
-                    && $database->table('users')->count() === 0;
+            if ($hasEmptyPartialSchema) {
+                $console->call('migrate:fresh', ['--force' => true]);
+            } else {
+                $console->call('migrate', ['--force' => true]);
+            }
 
-                if ($hasEmptyPartialSchema) {
-                    $console->call('migrate:fresh', ['--force' => true]);
-                } else {
-                    $console->call('migrate', ['--force' => true]);
-                }
-
-                if ($database->table('categories')->count() === 0) {
-                    $console->call('db:seed', ['--force' => true]);
-                }
-            } finally {
-                $database->statement('SELECT pg_advisory_unlock(141001)');
+            if ($database->table('categories')->count() === 0) {
+                $console->call('db:seed', ['--force' => true]);
             }
         }
     } catch (Throwable $exception) {
