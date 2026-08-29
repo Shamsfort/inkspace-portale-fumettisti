@@ -52,9 +52,25 @@ class User extends Authenticatable
         return $this->hasMany(Article::class, 'author_id');
     }
 
+    public function communityPosts(): HasMany
+    {
+        return $this->hasMany(CommunityPost::class);
+    }
+
+    public function communityComments(): HasMany
+    {
+        return $this->hasMany(CommunityComment::class);
+    }
+
+    public function adminRequests(): HasMany
+    {
+        return $this->hasMany(AdminRequest::class);
+    }
+
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
     }
 
 }
+

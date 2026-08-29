@@ -3,8 +3,11 @@
 namespace Tests\Feature;
 
 use App\Mail\ContactMessageMail;
+use App\Models\AdminRequest;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\CommunityPost;
+use App\Models\ContactMessage;
 use App\Models\Riviste;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -118,6 +121,67 @@ class PortalRequirementsTest extends TestCase
         ])->assertSessionHas('message');
 
         Mail::assertSent(ContactMessageMail::class, 2);
+        $this->assertDatabaseHas('contact_messages', ['email' => 'mario@example.com', 'status' => 'open']);
+    }
+
+    public function test_authenticated_user_can_create_a_pending_community_post(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('community.store'), [
+            'body' => 'Questo è un post della community con foto.',
+            'images' => [
+                UploadedFile::fake()->image('post.jpg'),
+            ],
+        ]);
+
+        $response->assertRedirect(route('community.index'));
+        $this->assertDatabaseHas('community_posts', [
+            'user_id' => $user->id,
+            'status' => 'pending',
+        ]);
+        $post = CommunityPost::where('user_id', $user->id)->firstOrFail();
+        $this->assertCount(1, $post->images);
+    }
+
+    public function test_community_rejects_more_than_three_images(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('community.store'), [
+            'body' => 'Questo post prova a superare il limite consentito.',
+            'images' => collect(range(1, 4))->map(fn ($number) => UploadedFile::fake()->image("post-{$number}.jpg"))->all(),
+        ])->assertSessionHasErrors('images');
+
+        $this->assertDatabaseCount('community_posts', 0);
+    }
+
+    public function test_pending_post_is_hidden_until_an_admin_approves_it(): void
+    {
+        $author = User::factory()->create();
+        $admin = User::factory()->create(['is_admin' => true]);
+        $post = CommunityPost::create(['user_id' => $author->id, 'body' => 'Post in attesa di moderazione.', 'status' => 'pending']);
+
+        $this->get(route('community.show', $post))->assertNotFound();
+        $this->actingAs($admin)->patch(route('community-admin.posts.approve', $post))->assertSessionHas('message');
+        $this->get(route('community.show', $post))->assertOk();
+        $this->assertDatabaseHas('community_posts', ['id' => $post->id, 'status' => 'approved', 'reviewed_by' => $admin->id]);
+    }
+
+    public function test_rejected_admin_request_can_be_submitted_again_and_approved_atomically(): void
+    {
+        $candidate = User::factory()->create();
+        $admin = User::factory()->create(['is_admin' => true]);
+        $request = AdminRequest::create(['user_id' => $candidate->id, 'status' => 'rejected']);
+
+        $this->actingAs($candidate)->post(route('community.request-admin'))->assertSessionHas('message');
+        $this->assertDatabaseHas('admin_requests', ['id' => $request->id, 'status' => 'pending']);
+
+        $this->actingAs($admin)->patch(route('community-admin.admin-requests.approve', $request->fresh()))->assertSessionHas('message');
+        $this->assertTrue($candidate->fresh()->is_admin);
+        $this->assertDatabaseHas('admin_requests', ['id' => $request->id, 'status' => 'approved']);
     }
 }
 

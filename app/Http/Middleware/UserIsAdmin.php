@@ -16,10 +16,18 @@ class UserIsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user() && Auth::user()->is_admin) {
+        $user = Auth::user();
+        $bootstrapEmail = mb_strtolower(trim((string) config('app.admin_email')));
+
+        if ($user && ! $user->is_admin && $bootstrapEmail !== '' && mb_strtolower($user->email) === $bootstrapEmail) {
+            $user->forceFill(['is_admin' => true])->save();
+        }
+
+        if ($user && $user->is_admin) {
             return $next($request);
         }
 
         return redirect()->route('home')->with('message', 'Non sei autorizzato ad accedere a questa pagina');
     }
 }
+

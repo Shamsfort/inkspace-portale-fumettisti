@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "outputDirectory": "public",
+  "regions": ["fra1"],
   "functions": {
     "api/index.php": {
       "runtime": "vercel-php@0.9.0",
@@ -16,3 +16,4 @@
     { "src": "/(.*)", "dest": "/api/index.php" }
   ]
 }
+

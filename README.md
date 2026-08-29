@@ -48,14 +48,18 @@ php artisan test
 
 La suite usa SQLite in memoria e non modifica il database locale.
 
-## Demo su Vercel
+## Deploy su Vercel
 
-La configurazione inclusa usa il runtime PHP della community Vercel e una copia
-temporanea del database SQLite dimostrativo. I contenuti iniziali sono sempre
-disponibili; registrazioni, modifiche e caricamenti effettuati online possono
-essere azzerati quando la funzione serverless viene ricreata. Per un ambiente
-produttivo va collegato un database PostgreSQL/MySQL persistente e uno storage
-esterno per le immagini.
+La produzione usa il runtime PHP serverless, PostgreSQL Neon persistente e
+Vercel Blob per le immagini. La funzione è eseguita a Francoforte, nella stessa
+regione del database, e usa la connessione pooled durante il normale traffico.
+
+Le migrazioni non vengono eseguite durante ogni richiesta HTTP. Per un
+aggiornamento controllato dello schema si può impostare temporaneamente
+`RUN_DATABASE_MIGRATIONS=true`, effettuare una singola richiesta sul deployment
+e riportare subito la variabile a `false`. Il runtime esegue esclusivamente
+`migrate --force`: non cancella mai il database con `migrate:fresh`.
 
 Il progetto nasce dalla traccia didattica conservata nella repository
 [`Hackademy-141A/Portale-Fumettisti-Federico-Esposito-Tuccillo`](https://github.com/Hackademy-141A/Portale-Fumettisti-Federico-Esposito-Tuccillo).
+

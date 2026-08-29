@@ -19,7 +19,7 @@ class PublicController extends Controller
     
     public function home(){
         // Fetch the latest accepted articles
-        $articles = Article::with(['user.profile', 'categories', 'rivista'])->where('is_accepted', true)
+        $articles = Article::with(['user:id,name,username', 'categories'])->where('is_accepted', true)
                             ->orderBy('created_at', 'desc')
                             ->take(3)
                             ->get();
@@ -67,3 +67,4 @@ class PublicController extends Controller
         return redirect(route('home'))->with('message', 'La tua richiesta è stata inviata con successo');
     }
 }
+

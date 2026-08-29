@@ -8,11 +8,16 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item"><a class="nav-link" href="{{ route('article.index') }}">Fumetti</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('profile.index') }}">Fumettisti</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('community.index') }}">Community</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('contact.create') }}">Contatti</a></li>
             </ul>
             <div class="d-flex align-items-lg-center gap-2 flex-column flex-lg-row">
                 @auth
                     <a class="btn btn-sm btn-outline-light" href="{{ route('profile.show') }}">Il mio profilo</a>
+                    <a class="btn btn-sm btn-outline-light" href="{{ route('community.create') }}">Post community</a>
+                    @if(auth()->user()->is_admin)
+                        <a class="btn btn-sm btn-warning" href="{{ route('community-admin.dashboard') }}">Moderazione</a>
+                    @endif
                     <a class="btn btn-sm btn-accent" href="{{ route('article.create') }}">Pubblica fumetto</a>
                     <form method="POST" action="{{ route('logout') }}">@csrf<button class="btn btn-sm btn-link text-white" type="submit">Esci</button></form>
                 @else
@@ -23,3 +28,4 @@
         </div>
     </div>
 </nav>
+

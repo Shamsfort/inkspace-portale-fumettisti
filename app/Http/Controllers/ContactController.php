@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ContactMessageMail;
+use App\Models\ContactMessage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -23,9 +24,12 @@ class ContactController extends Controller
             'message' => ['required', 'string', 'min:10', 'max:5000'],
         ]);
 
+        ContactMessage::create($data);
+
         Mail::to(config('mail.contact_address'))->send(new ContactMessageMail($data));
         Mail::to($data['email'])->send(new ContactMessageMail($data, true));
 
         return back()->with('message', 'Messaggio inviato. Ti abbiamo mandato una conferma via e-mail.');
     }
 }
+

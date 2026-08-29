@@ -1,6 +1,13 @@
 <article class="comic-card">
     @if ($article->image)
-        <img class="comic-cover" src="{{ $article->image_url }}" alt="Copertina di {{ $article->title }}">
+        <img
+            class="comic-cover"
+            src="{{ $article->image_url }}"
+            alt="Copertina di {{ $article->title }}"
+            loading="{{ ($loop->first ?? false) ? 'eager' : 'lazy' }}"
+            decoding="async"
+            @if ($loop->first ?? false) fetchpriority="high" @endif
+        >
     @else
         <div class="comic-cover d-flex align-items-center justify-content-center display-title display-4">NO COVER</div>
     @endif

@@ -57,6 +57,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'admin_email' => env('ADMIN_EMAIL'),
+
     'asset_url' => env('ASSET_URL'),
 
     /*
@@ -186,3 +188,4 @@ return [
     ])->toArray(),
 
 ];
+

@@ -8,8 +8,23 @@
                 <p class="eyebrow text-dark mb-1">Fumettista indipendente</p>
                 <h1 class="display-title display-3">{{ $user->username ?: $user->name }}</h1>
                 <p class="lead">{{ $user->profile?->short_description ?: 'Questo autore non ha ancora aggiunto una biografia.' }}</p>
-                <div class="surface-card p-4 mt-4"><h2 class="h5">Contatti</h2><p class="mb-1"><strong>E-mail:</strong> {{ $user->email }}</p>@if($user->profile?->phone)<p class="mb-1"><strong>Telefono:</strong> {{ $user->profile->phone }}</p>@endif @if($user->profile?->company_address)<p class="mb-0"><strong>Sede legale:</strong> {{ $user->profile->company_address }}</p>@endif</div>
-                @auth @if(auth()->id() === $user->id)<a class="btn btn-brand mt-3" href="{{ route('profile.edit') }}">Modifica profilo</a>@endif @endauth
+                @if(auth()->id() === $user->id || auth()->user()?->is_admin)
+                    <div class="surface-card p-4 mt-4"><h2 class="h5">Contatti privati</h2><p class="mb-1"><strong>E-mail:</strong> {{ $user->email }}</p>@if($user->profile?->phone)<p class="mb-1"><strong>Telefono:</strong> {{ $user->profile->phone }}</p>@endif @if($user->profile?->company_address)<p class="mb-0"><strong>Sede legale:</strong> {{ $user->profile->company_address }}</p>@endif</div>
+                @endif
+                @auth
+                    @if(auth()->id() === $user->id)
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <a class="btn btn-brand" href="{{ route('profile.edit') }}">Modifica profilo</a>
+                            <a class="btn btn-outline-dark" href="{{ route('community.create') }}">Nuovo post community</a>
+                            @unless(auth()->user()->is_admin)
+                                <form method="POST" action="{{ route('community.request-admin') }}">
+                                    @csrf
+                                    <button class="btn btn-outline-primary" type="submit">Richiedi admin</button>
+                                </form>
+                            @endunless
+                        </div>
+                    @endif
+                @endauth
             </div>
         </div>
 

@@ -20,7 +20,7 @@ class ArticleController extends Controller
 
     public function index(): View
     {
-        $articles = Article::with(['user.profile', 'categories', 'rivista'])
+        $articles = Article::with(['user:id,name,username', 'categories'])
             ->where('is_accepted', true)->latest()->paginate(12);
 
         return view('article.index', compact('articles'));

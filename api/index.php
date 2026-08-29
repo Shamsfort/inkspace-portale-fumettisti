@@ -6,7 +6,6 @@ error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 ini_set('display_errors', '0');
 
 $storagePath = '/tmp/storage';
-$bootstrapCachePath = '/tmp/bootstrap/cache';
 
 foreach ([
     $storagePath.'/app/public',
@@ -14,17 +13,36 @@ foreach ([
     $storagePath.'/framework/sessions',
     $storagePath.'/framework/views',
     $storagePath.'/logs',
-    $bootstrapCachePath,
 ] as $directory) {
     if (! is_dir($directory)) {
         mkdir($directory, 0755, true);
     }
 }
 
+$shouldRunMigrations = filter_var(
+    getenv('RUN_DATABASE_MIGRATIONS') ?: 'false',
+    FILTER_VALIDATE_BOOLEAN
+);
+$pooledDatabaseUrl = getenv('DATABASE_URL');
 $unpooledDatabaseUrl = getenv('DATABASE_URL_UNPOOLED');
-$databaseUrl = is_string($unpooledDatabaseUrl) && $unpooledDatabaseUrl !== ''
-    ? $unpooledDatabaseUrl
-    : getenv('DATABASE_URL');
+$databaseUrl = $shouldRunMigrations
+    && is_string($unpooledDatabaseUrl)
+    && $unpooledDatabaseUrl !== ''
+        ? $unpooledDatabaseUrl
+        : $pooledDatabaseUrl;
+
+if (! is_string($databaseUrl) || $databaseUrl === '') {
+    $databaseUrl = $unpooledDatabaseUrl;
+}
+
+if ($shouldRunMigrations && (! is_string($unpooledDatabaseUrl) || $unpooledDatabaseUrl === '')) {
+    throw new RuntimeException('DATABASE_URL_UNPOOLED is required while RUN_DATABASE_MIGRATIONS is enabled.');
+}
+
+if (getenv('VERCEL') && (! is_string($databaseUrl) || $databaseUrl === '')) {
+    throw new RuntimeException('A persistent DATABASE_URL is required on Vercel.');
+}
+
 $usesPostgres = is_string($databaseUrl) && $databaseUrl !== '';
 
 if ($usesPostgres) {
@@ -35,7 +53,7 @@ if ($usesPostgres) {
     $databaseHost = parse_url($databaseUrl, PHP_URL_HOST);
     if (is_string($databaseHost)
         && str_ends_with($databaseHost, '.neon.tech')) {
-        $endpointId = explode('.', $databaseHost)[0];
+        $endpointId = preg_replace('/-pooler$/', '', explode('.', $databaseHost)[0]);
         putenv('NEON_ENDPOINT_ID='.$endpointId);
         $_ENV['NEON_ENDPOINT_ID'] = $endpointId;
         $_SERVER['NEON_ENDPOINT_ID'] = $endpointId;
@@ -51,11 +69,6 @@ if (! $usesPostgres && ! file_exists($databasePath)) {
 $defaults = [
     'APP_ENV' => 'production',
     'APP_DEBUG' => 'false',
-    'APP_CONFIG_CACHE' => $bootstrapCachePath.'/config.php',
-    'APP_EVENTS_CACHE' => $bootstrapCachePath.'/events.php',
-    'APP_PACKAGES_CACHE' => $bootstrapCachePath.'/packages.php',
-    'APP_ROUTES_CACHE' => $bootstrapCachePath.'/routes-v7.php',
-    'APP_SERVICES_CACHE' => $bootstrapCachePath.'/services.php',
     'LOG_CHANNEL' => 'stderr',
     'DB_CONNECTION' => $usesPostgres ? 'pgsql' : 'sqlite',
     'CACHE_DRIVER' => 'array',
@@ -82,34 +95,34 @@ require __DIR__.'/../vendor/autoload.php';
 
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
-if ($usesPostgres) {
+if ($usesPostgres && $shouldRunMigrations) {
+    $database = null;
+
     try {
         $console = $app->make(Illuminate\Contracts\Console\Kernel::class);
         $console->bootstrap();
         $database = $app->make(Illuminate\Database\DatabaseManager::class);
-        $schema = $database->connection()->getSchemaBuilder();
-        $isInitialized = $schema->hasTable('migrations')
-            && $database->table('migrations')
-                ->where('migration', '2026_08_27_000001_create_profiles_and_comic_relations')
-                ->exists();
+        $database->statement('SELECT pg_advisory_lock(141029082026)');
+        $exitCode = $console->call('migrate', ['--force' => true]);
 
-        if (! $isInitialized) {
-            $hasEmptyPartialSchema = $schema->hasTable('users')
-                && ! $schema->hasTable('articles')
-                && $database->table('users')->count() === 0;
+        if ($exitCode !== 0) {
+            throw new RuntimeException('Laravel migrate returned exit code '.$exitCode.'.');
+        }
 
-            if ($hasEmptyPartialSchema) {
-                $console->call('migrate:fresh', ['--force' => true]);
-            } else {
-                $console->call('migrate', ['--force' => true]);
-            }
-
-            if ($database->table('categories')->count() === 0) {
-                $console->call('db:seed', ['--force' => true]);
-            }
+        if ($database->table('categories')->count() === 0) {
+            $console->call('db:seed', ['--force' => true]);
         }
     } catch (Throwable $exception) {
         error_log('Database initialization failed: '.$exception->getMessage());
+        throw $exception;
+    } finally {
+        if ($database !== null) {
+            try {
+                $database->statement('SELECT pg_advisory_unlock(141029082026)');
+            } catch (Throwable $unlockException) {
+                error_log('Database migration lock release failed: '.$unlockException->getMessage());
+            }
+        }
     }
 }
 
